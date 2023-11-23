@@ -32,25 +32,40 @@ class GridEnvironment:
 
     def initialize_snakes(self):
         """Places the snakes on the grid at initialization"""
+        # Try to find a valid location for each snake
         for i in range(self.num_snakes):
             valid_location_found = False
+            # Loop until a valid location is found for the snake
             while not valid_location_found:
+                # Select a random coordinate on the map
                 one_coord = random.randint(0, self.size - 1)
+
+                # Create a list of possible positions
                 options = [
                     [0, one_coord],
                     [self.size - 1, one_coord],
                     [one_coord, 0],
                     [one_coord, self.size - 1],
                 ]
+
+                # Select one of the options
                 location = random.choice(options)  # Either on left, right, top, or bot
+
                 # print(location)
                 if (
+                    # The current cell position does not contain a snake
                     self.grid[location[1]][location[0]] != "S"
-                ):  # row, column to x, y (swap)
+                ):
+                    # row, column to x, y (swap)
+                    # Set the current cell position
                     self.grid[location[1]][location[0]] = "S"
+
+                    # Create a new snake at the current position
                     temp_snake = Snake(location)
                     self.snakes.append(temp_snake)
                     self.snake_positions.append(temp_snake.pos)
+
+                    # Mark that a position has been found for the current snake
                     valid_location_found = True
 
     def initialize_goal(self):
@@ -64,13 +79,19 @@ class GridEnvironment:
                 [one_coord, self.size - 1],
             ]
             location = random.choice(options)
+
+            # Check that the goal does not override a snake position
             if self.grid[location[1]][location[0]] != "S":
                 self.goal = location
                 self.grid[location[1]][location[0]] = "G"
                 goal_generated = True
 
     def check_loss(self):
-        """True if loss, false else"""
+        """
+        Checks if any snake is at the same position as the iguana.
+
+        @returns `True` if loss, `False` else
+        """
         for snake in self.snakes:
             if snake.pos == self.iguana_pos:
                 self.iguana_ded = True
@@ -82,7 +103,11 @@ class GridEnvironment:
         return False
 
     def check_win(self):
-        """True if win, false else"""
+        """
+        Checks if the iguana has reached the goal
+
+        @returns `True` if win, `False` else
+        """
         if self.goal == self.iguana_pos:
             self.iguana_escaped = True
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
@@ -93,8 +118,11 @@ class GridEnvironment:
 
     def run_round(self, iguana_move, speed=1, do_print=True):
         """Runs a round"""
+
+        # Get the iguana position
         ip = self.iguana_pos
         self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "."  # Clear old iguana pos
+
         if iguana_move == "up":
             # do 1 move at a time and test for goal
             ip_1 = [ip[0], max(0, ip[1] - 1)]
@@ -110,18 +138,23 @@ class GridEnvironment:
             ip_2 = [min(self.size - 1, ip_1[0] + 1), ip[1]]
 
         self.iguana_pos = ip_1
+        # Has the iguana reached the goal
         if self.check_win():
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
             return
+
+        # Has a snake touched the iguana
         elif self.check_loss():
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "X"  # for eaten iguana
             return
+        # Nothing happened
         else:
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "I"
 
         # optionally draw the grid
         self.print_grid()
 
+        # If the iguana has a speed of 2 then its movement speed is doubled
         if speed == 2:
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "."
             self.iguana_pos = ip_2
@@ -145,6 +178,7 @@ class GridEnvironment:
                 if (self.grid[i][j] == "."):
                     self.grid[i][j] = "-"'''
 
+        # Update the positions of the snakes
         self.snake_positions = []
         for snake in self.snakes:
             self.grid[snake.pos[1]][snake.pos[0]] = "~"  # Slithers
