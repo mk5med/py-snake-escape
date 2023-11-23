@@ -5,6 +5,7 @@ import math
 import time  # for sleep
 from snake import Snake
 
+
 class GridEnvironment:
     def __init__(self, size=9, num_snakes=5, do_print=True):
         random.seed()  # I guess we seed here?
@@ -31,7 +32,9 @@ class GridEnvironment:
         self.do_print = do_print
 
     def initialize_snakes(self):
-        """Places the snakes on the grid at initialization"""
+        """
+        Places snakes at random locations on the grid at initialization
+        """
         # Try to find a valid location for each snake
         for i in range(self.num_snakes):
             valid_location_found = False
@@ -54,7 +57,8 @@ class GridEnvironment:
                 # print(location)
                 if (
                     # The current cell position does not contain a snake
-                    self.grid[location[1]][location[0]] != "S"
+                    self.grid[location[1]][location[0]]
+                    != "S"
                 ):
                     # row, column to x, y (swap)
                     # Set the current cell position
@@ -69,6 +73,9 @@ class GridEnvironment:
                     valid_location_found = True
 
     def initialize_goal(self):
+        """
+        Add the goal onto the grid
+        """
         goal_generated = False
         while not goal_generated:
             one_coord = random.randint(0, self.size - 1)
@@ -178,6 +185,9 @@ class GridEnvironment:
                 if (self.grid[i][j] == "."):
                     self.grid[i][j] = "-"'''
 
+        self.update_snakes()
+
+    def update_snakes(self):
         # Update the positions of the snakes
         self.snake_positions = []
         for snake in self.snakes:
@@ -192,6 +202,7 @@ class GridEnvironment:
                 self.grid[snake.pos[1]][snake.pos[0]] = "S"
                 self.snake_positions.append(snake.pos)
 
+        # The snakes have moved
         self.print_grid("s")  # Finally print the updated grid
 
         # Now clean the grid of slithers
@@ -202,31 +213,46 @@ class GridEnvironment:
 
     def print_grid(self, turn="i"):
         """Prints out the grid for the user"""
-        # Always update goal to show (unless 'W')
 
+        # Always update goal to show (unless 'W')
         if (
             self.grid[self.goal[1]][self.goal[0]] != "G"
             and self.grid[self.goal[1]][self.goal[0]] != "W"
         ):
             self.grid[self.goal[1]][self.goal[0]] = "G"
+
         if self.do_print:
             time.sleep(0.25)  # Comment this out if it's annoying to you
 
+            """
+            Print the state of the game
+            """
+
             print("-" * (self.size * 2 + 6))
+            # Iguana is in control
             if turn == "i":
                 print(" " * (self.size // 2) + "Iguana's Turn!")
+            # Snake is in control
             elif turn == "s":
                 print(" " * (self.size // 2) + "Snakes' Turn!")
+            # The game started
             elif turn == "start":
                 print(" " * (self.size // 2) + "Start State")
+            # The game ended
             else:
                 print(" " * (self.size // 2) + "End State")
 
-            print("-" * (self.size * 2 + 6))
-            for row in self.grid:
-                print(" " * 3, end="")
-                print(*row)
-            print("-" * (self.size * 2 + 6))
+            self._print_grid()
+
+    def _print_grid(self):
+        # Print the grid header
+        print("-" * (self.size * 2 + 6))
+        # Print the grid
+        for row in self.grid:
+            print(" " * 3, end="")
+            print(*row)
+        # Print the grid footer
+        print("-" * (self.size * 2 + 6))
 
 
 if __name__ == "__main__":
