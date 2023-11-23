@@ -4,6 +4,14 @@ import random
 import math
 import time  # for sleep
 from snake import Snake
+import typing
+
+## Helpers for run_round ##
+Action = typing.Callable[[typing.Tuple[int, int], int], typing.Tuple[int, int]]
+up: Action = lambda pos, size: [pos[0], max(0, pos[1] - 1)]
+down: Action = lambda pos, size: [pos[0], min(size - 1, pos[1] + 1)]
+left: Action = lambda pos, size: [max(0, pos[0] - 1), pos[1]]
+right: Action = lambda pos, size: [min(size - 1, pos[0] + 1), pos[1]]
 
 
 class GridEnvironment:
@@ -17,6 +25,9 @@ class GridEnvironment:
         self.snakes = []  # list of snakes
         self.snake_positions = []
         self.iguana_pos = self.centre_coord  # by initialization (will change)
+
+        ## Initialise the map ##
+        # Populate the grid
         for i in range(self.size):
             self.grid.append(["-"] * self.size)  # '-' means nothing there
         self.grid[self.center][self.center] = "I"
@@ -26,9 +37,11 @@ class GridEnvironment:
         # self.goal = [None, None] # To make the goal
         self.initialize_goal()  # To make the goal
 
+        ## Initialise non-map settings ##
         self.iguana_ded = False
         self.iguana_escaped = False
 
+        ## Helpers ##
         self.do_print = do_print
 
     def initialize_snakes(self):
@@ -120,8 +133,8 @@ class GridEnvironment:
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
             self.print_grid("end")
             return True
-        else:
-            return False
+
+        return False
 
     def run_round(self, iguana_move, speed=1, do_print=True):
         """Runs a round"""
@@ -130,19 +143,19 @@ class GridEnvironment:
         ip = self.iguana_pos
         self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "."  # Clear old iguana pos
 
+        action = None
         if iguana_move == "up":
-            # do 1 move at a time and test for goal
-            ip_1 = [ip[0], max(0, ip[1] - 1)]
-            ip_2 = [ip[0], max(0, ip_1[1] - 1)]
+            action = up
         elif iguana_move == "down":
-            ip_1 = [ip[0], min(self.size - 1, ip[1] + 1)]
-            ip_2 = [ip[0], min(self.size - 1, ip_1[1] + 1)]
+            action = down
         elif iguana_move == "left":
-            ip_1 = [max(0, ip[0] - 1), ip[1]]
-            ip_2 = [max(0, ip_1[0] - 1), ip[1]]
+            action = left
         elif iguana_move == "right":
-            ip_1 = [min(self.size - 1, ip[0] + 1), ip[1]]
-            ip_2 = [min(self.size - 1, ip_1[0] + 1), ip[1]]
+            action = right
+
+        # do 1 move at a time and test for goal
+        ip_1 = action(ip, self.size)
+        ip_2 = action(ip_1, self.size)
 
         self.iguana_pos = ip_1
         if self.check_game_end():
@@ -181,6 +194,7 @@ class GridEnvironment:
             return True
         # Nothing happened
         self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "I"
+
         return False
 
     def update_snakes(self):
