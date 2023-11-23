@@ -145,18 +145,8 @@ class GridEnvironment:
             ip_2 = [min(self.size - 1, ip_1[0] + 1), ip[1]]
 
         self.iguana_pos = ip_1
-        # Has the iguana reached the goal
-        if self.check_win():
-            self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
+        if self.check_game_end():
             return
-
-        # Has a snake touched the iguana
-        elif self.check_loss():
-            self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "X"  # for eaten iguana
-            return
-        # Nothing happened
-        else:
-            self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "I"
 
         # optionally draw the grid
         self.print_grid()
@@ -165,16 +155,8 @@ class GridEnvironment:
         if speed == 2:
             self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "."
             self.iguana_pos = ip_2
-            if self.check_win():
-                self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
+            if self.check_game_end():
                 return
-            elif self.check_loss():
-                self.grid[self.iguana_pos[1]][
-                    self.iguana_pos[0]
-                ] = "X"  # for eaten iguana
-                return
-            else:
-                self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "I"
 
             # optionally draw the grid
             self.print_grid()
@@ -186,6 +168,20 @@ class GridEnvironment:
                     self.grid[i][j] = "-"'''
 
         self.update_snakes()
+
+    def check_game_end(self):
+        # Has the iguana reached the goal
+        if self.check_win():
+            self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "W"  # w for win!
+            return True
+
+        # Has a snake touched the iguana
+        elif self.check_loss():
+            self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "X"  # for eaten iguana
+            return True
+        # Nothing happened
+        self.grid[self.iguana_pos[1]][self.iguana_pos[0]] = "I"
+        return False
 
     def update_snakes(self):
         # Update the positions of the snakes
