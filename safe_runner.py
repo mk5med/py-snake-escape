@@ -1,9 +1,9 @@
-import GridClassFile
-from QuizFile import generate_iguana_move
+import grid_class
+from quiz import generate_iguana_move
 import copy
 
 
-def run_action(action, grid: GridClassFile.GridEnvironment):
+def run_action(action, grid: grid_class.GridEnvironment):
     """
     Ensures that action is called with a copy of `grid`.
     This protects the game from algorithms that modify the grid and influence game results
@@ -11,7 +11,7 @@ def run_action(action, grid: GridClassFile.GridEnvironment):
     return action(copy.deepcopy(grid))
 
 
-def run_simulation(*, action, grid: GridClassFile.GridEnvironment, max_steps: int):
+def run_simulation(*, action, grid: grid_class.GridEnvironment, max_steps: int):
     current_steps = 0
 
     # Flag to stop the loop
@@ -44,7 +44,7 @@ def generate_metrics(*, action, samples: int = 10000, max_steps: int):
     num_victories = 0
     num_losses = 0
     for i in range(samples):
-        grid = GridClassFile.GridEnvironment(size=11, num_snakes=5, do_print=False)
+        grid = grid_class.GridEnvironment(size=11, num_snakes=5, do_print=False)
 
         # my_grid.print_grid("start")
 
@@ -86,7 +86,7 @@ def main(action, *, should_generate_metrics=True, max_steps=100):
     """
     print("Initializing escape simulation")
 
-    my_grid = GridClassFile.GridEnvironment(size=11, num_snakes=5, do_print=True)
+    my_grid = grid_class.GridEnvironment(size=11, num_snakes=5, do_print=True)
 
     # Print the initial grid
     my_grid.print_grid("start")

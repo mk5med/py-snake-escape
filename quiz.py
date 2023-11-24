@@ -1,5 +1,5 @@
 # Do not modify the GridClassFile.py
-import GridClassFile
+import grid_class
 
 # Iguana vs. Snakes (epic): https://youtu.be/el4CQj-TCbA?t=83
 
@@ -15,7 +15,7 @@ import GridClassFile
 # If a snake touches the iguana you lose ('X'). If the iguana touches the goal you win ('W').
 
 
-def generate_iguana_move(my_grid_environment: GridClassFile.GridEnvironment):
+def generate_iguana_move(my_grid_environment: grid_class.GridEnvironment):
     # Hints: you may find the following useful:
 
     # my_grid_environment.snake_positions gives a list of all snake positions [x, y]
